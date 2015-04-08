@@ -22,5 +22,5 @@ ongate = ongate + 1
 ongate = ongate / 2
 offgate = np.fliplr([ongate])[0]
 sustain = np.zeros((len(tone) - 2 * len(ongate)))
-env = [ongate, sustain, offgate]
+env = [ongate, sustain, offgate]   # I matlab-ed here lol
 tone = np.multiply(tone, env)

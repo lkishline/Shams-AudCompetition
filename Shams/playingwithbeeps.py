@@ -16,11 +16,11 @@ t = np.linspace(0, 0.1, fs * dur)
 tone = np.sin(2 * np.pi * freq * t)
 
 # onset and offset gating
-gatedur = 0.006    # the duration of the gate in seconds (6ms)
+gatedur = 0.005    # the duration of the gate in seconds (6ms)
 ongate = np.cos(np.linspace(np.pi, 2*np.pi, fs * gatedur))
 ongate = ongate + 1
 ongate = ongate / 2
-offgate = np.fliplr(ongate)
-sustain = np.ones(1, (len(tone) - 2 * len(ongate)))
+offgate = np.fliplr([ongate])[0]
+sustain = np.zeros((len(tone) - 2 * len(ongate)))
 env = [ongate, sustain, offgate]
 tone = np.multiply(tone, env)

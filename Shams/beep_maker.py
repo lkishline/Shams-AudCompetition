@@ -39,11 +39,6 @@ for x in xrange(1, 5):
     
 #plt.plot(tonecomp)
 
-# look in frequency domain ### doesn't work due to fft function ??
-#freqindex = np.arange(int(fs - 1))
-#powerFT = abs(np.fft(tonecomp))  # abs value of fourier components
-#plt.plot(freqindex, powerFT)
-
 
 ### Making envelopes and applying to tone burst ###
 
@@ -69,20 +64,20 @@ noiseburst = np.random.normal(0, 1.0, int(fs * 1.0))  # 1 secs
 #flteredburst = stimuli.get_env(noiseburst, fs, 100, 1500) # not right obvi
 #plt.plot(flteredburst)
 
-window = signal.hamming(100)
-plt.plot(window)
-plt.title("Hamming window")
-plt.ylabel("Amplitude")
-plt.xlabel("sample")
-
-plt.figure()
-A = fft(window, fs)
-freq = np.linspace(-0.5, 0.5, len(A))
-response = 20 * np.log10(np.abs(fftshift(A / abs(A).max())))
-plt.plot(freq, response)
-plt.axis([-0.5, 0.5, -120, 0])
-plt.title("Frequency response of the Hamming window")
-plt.ylabel("Normalized magnitude [dB]")
-plt.xlabel("Normalized frequency [cycles per sample]")
+#window = signal.hamming(100)
+#plt.plot(window)
+#plt.title("Hamming window")
+#plt.ylabel("Amplitude")
+#plt.xlabel("sample")
+#
+#plt.figure()
+#A = fft(window, fs)
+#freq = np.linspace(-0.5, 0.5, len(A))
+#response = 20 * np.log10(np.abs(fftshift(A / abs(A).max())))
+#plt.plot(freq, response)
+#plt.axis([-0.5, 0.5, -120, 0])
+#plt.title("Frequency response of the Hamming window")
+#plt.ylabel("Normalized magnitude [dB]")
+#plt.xlabel("Normalized frequency [cycles per sample]")
 
 ### Making two beeps seperated by some amount of time ###

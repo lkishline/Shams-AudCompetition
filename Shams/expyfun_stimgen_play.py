@@ -35,6 +35,7 @@ for x in xrange(1, 5):
     tonecomp = tonecomp + np.sin(freq * 2 * np.pi * np.arange(int(fs * dur)) / float(fs))
 
 tonecomp_ramped = stimuli._stimuli.window_edges(tonecomp, fs, toneramp)
+    # not sure if window_edges does what I think it does?
 
 # plt.plot(tonecomp_ramped)
 
@@ -42,7 +43,12 @@ tonecomp_ramped = stimuli._stimuli.window_edges(tonecomp, fs, toneramp)
 ### noise burst ###
 
 noiseburst = np.random.normal(0, 1.0, int(fs * 1.0))  # 1 secs
+plt.plot(noiseburst)
 
+# ramp and lowpass filtering with Hamming window
 nb_ramped = stimuli._stimuli.window_edges(noiseburst, fs, noiseramp, -1, 'hamming')
+    # how do I get a '100' order Hamming window and how does this
+    # translate to a 1500Hz -6db cutoff? 
 
 plt.plot(nb_ramped)
+

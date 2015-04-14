@@ -41,6 +41,12 @@ finalstim_nb = np.multiply(nb_ramped, filtered_stim)
 
 finalstim_tc = stimuli._stimuli.window_edges(tonecomp, fs, toneramp, -1, 'hamming')
 
+### cut off extra 50 points from noiseburst ###
+
+
+### create a two beep stimulus ###
+
+### figure out spacing for auditory with visual ###
 
 
 ### plots to check frequencies and timing/windowing ###

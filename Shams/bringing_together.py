@@ -9,6 +9,7 @@ import numpy as np
 import scipy.signal as sig
 import matplotlib.pyplot as plt
 from expyfun import stimuli
+from expyfun.stimuli import convolve_hrtf, play_sound, window_edges
 
 fs = 24414.
 dur = 0.008
@@ -40,10 +41,10 @@ filtered_stim = filtered_stim[50:]
 toneramp = 0.006
 noiseramp = 0.003
 
-nb_ramped = stimuli._stimuli.window_edges(nb[50:], fs, noiseramp, -1, 'hamming')
+nb_ramped = window_edges(nb[50:], fs, noiseramp, -1, 'hamming')
 finalstim_nb = np.multiply(nb_ramped, filtered_stim)
 
-finalstim_tc = stimuli._stimuli.window_edges(tonecomp, fs, toneramp, -1, 'hamming')
+finalstim_tc = window_edges(tonecomp, fs, toneramp, -1, 'hamming')
 
 
 ### create a two beep stimulus ###
@@ -53,17 +54,20 @@ gap = np.zeros(24414. * interval, float)
 
 # if one beep:
 onebeep = np.concatenate((finalstim_tc, gap), axis=1)
-#plt.plot(onebeep)
+
 
 # if two beep:
 twobeep = np.append(onebeep, finalstim_tc, axis=1)
-plt.plot(twobeep)
 
-### figure out spacing for auditory with visual ###
 
+
+
+### play sound ###
+play_sound(twobeep, fs, norm=True, wait=True)
 
 ### plots to check frequencies and timing/windowing ###
 
 #plt.plot(t, finalstim_nb)
 #plt.plot(t, finalstim_tc)
-
+plt.plot(twobeep)
+#plt.plot(onebeep)

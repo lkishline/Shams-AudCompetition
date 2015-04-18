@@ -47,12 +47,23 @@ finalstim_tc = stimuli._stimuli.window_edges(tonecomp, fs, toneramp, -1, 'hammin
 
 
 ### create a two beep stimulus ###
+# 8ms + 50ms + 8ms = 195 + 1220 + 195 which is a total of 1610 samples
+interval = 0.050
+gap = np.zeros(24414. * interval, float)
+
+# if one beep:
+onebeep = np.concatenate((finalstim_tc, gap), axis=1)
+#plt.plot(onebeep)
+
+# if two beep:
+twobeep = np.append(onebeep, finalstim_tc, axis=1)
+plt.plot(twobeep)
 
 ### figure out spacing for auditory with visual ###
 
 
 ### plots to check frequencies and timing/windowing ###
 
-plt.plot(t, finalstim_nb)
+#plt.plot(t, finalstim_nb)
 #plt.plot(t, finalstim_tc)
 

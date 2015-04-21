@@ -53,12 +53,14 @@ interval = 0.050
 gap = np.zeros(24414. * interval, float)
 
 # if one beep:
-onebeep = np.concatenate((finalstim_tc, gap), axis=1)
+onebeep = np.concatenate((finalstim_nb, gap), axis=1)
 
 
 # if two beep:
-twobeep = np.append(onebeep, finalstim_tc, axis=1)
+twobeep = np.append(onebeep, finalstim_nb, axis=1)
 
+
+### convolve with HRTF at appropriate angles ###
 
 
 

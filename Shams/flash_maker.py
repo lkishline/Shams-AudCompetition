@@ -9,7 +9,7 @@ import scipy.signal as sig
 import matplotlib.pyplot as plt
 from expyfun import stimuli
 from expyfun import ExperimentController, analyze
-from expyfun.visual import FixationDot, Circle
+from expyfun.visual import FixationDot, Circle, ConcentricCircles
 
 
 
@@ -26,13 +26,27 @@ with ExperimentController('testExp', participant='foo', session='001',
                           output_dir=None) as ec:
     ec.screen_prompt('Press a button when you hear the tone', max_wait=1)
 
-    #dot = FixationDot()
-    flash = Circle(ec, radius=0.1, )
+    dot = ConcentricCircles(ec, units='deg', pos=[0, 10])
+    dot.draw()
+    ec.flip()
+    
+    flash = Circle(ec, radius=0.50, pos=(-5, 0), units='deg')
     ec.clear_buffer()
     ec.load_buffer(tone)
-    #dot.draw()
     flash.draw()
     screenshot = ec.screenshot()  # only because we want to show it in the docs
+    ec.flip()
+    
+
+    ###SECOND FLASH####
+    #dot = FixationDot()
+#    flash = Circle(ec, radius=0.50, pos=(-5, 0), units='deg')
+#    ec.clear_buffer()
+#    ec.load_buffer(tone)
+#    #dot.draw()
+#    flash.draw()
+#    screenshot = ec.screenshot()  # only because we want to show it in the docs
+#    ec.flip(0.02)
 
     ec.identify_trial(ec_id='tone', ttl_id=[0, 0])
     ec.start_stimulus()
@@ -50,7 +64,6 @@ analyze.plot_screen(screenshot)
 
 # Things to do:
 
-# have circle actually be a circle and not a blasted oval
-# make it flash 
-# make it flash over different areas of screen
-# move fixation dot off of midline
+# get second flash to happen at correct time
+# have fixation dot on entire time 
+# probably wait to do above when we have a run script (using erics headfoot as example)

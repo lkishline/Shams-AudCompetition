@@ -1,6 +1,7 @@
-library(lme4)
+#library(lme4)
 #library(caret)
 #setwd("/home/lindsey/Desktop/PythonFiles/Shams/Flashbeeps2.0")
+setwd("/Users/Lindsey/Desktop/Shams-AudCompetition-master")
 
 foo <- read.delim("GLMMData_ecc.tsv",
                   colClasses=c(subjnum="numeric", cue_attn="numeric", blcnum="numeric",
@@ -126,13 +127,17 @@ print(summary(dprime_reduced_mod))
 # significantly better fit than null model?
 anova(dprime_reduced_mod, dprime_null_mod)
 
+##### Reaction Time Model:
+# get p-values with mixed function
 
-# # get more info about the fit:
-# confint(ful_mod)
-# 
-# # regression assumptions check:
-# # http://tutorials.iq.harvard.edu/R/Rstatistics/Rstatistics.html
-# par(mar = c(4, 4, 2, 2), mfrow = c(1, 2)) #optional
-# plot(ful_mod, which = c(1, 2)) # "which" argument optional
+null_form_RT <- formula(raw_RT ~ two_flashes + (1|subjnum))
+full_form_RT <- formula(raw_RT ~ two_flashes*cue_attn*ecc + 
+                          two_flashes*two_sounds_at_target_location + (1|subjnum))
 
+# the below give me errors...
+# not sure what the deal is.
+RT_null_mod <- mixed(null_form_RT, data=foo)
+RT_full_mod <- mixed(full_form_RT, data=foo, method="KR")
+print(summary(null_form_RT))
+print(summary(full_form_RT))
 

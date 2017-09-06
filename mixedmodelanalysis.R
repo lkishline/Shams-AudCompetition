@@ -131,13 +131,22 @@ anova(dprime_reduced_mod, dprime_null_mod)
 # get p-values with mixed function
 
 null_form_RT <- formula(raw_RT ~ two_flashes + (1|subjnum))
-full_form_RT <- formula(raw_RT ~ two_flashes*cue_attn*ecc + 
-                          two_flashes*two_sounds_at_target_location + (1|subjnum))
+full_form_RT <- formula(raw_RT ~ two_flashes*cue_attn*ecc*two_sounds_at_target_location*pressed_two + (1|subjnum))
 
 # the below give me errors...
 # not sure what the deal is.
 RT_null_mod <- mixed(null_form_RT, data=foo)
 RT_full_mod <- mixed(full_form_RT, data=foo, method="KR")
+#this no work either :(
+glmm = function(full_form_RT, foo){
+  mod = do.call(mixed, list(formula=full_form_RT, data=foo))
+  return(mod)
+}
+m2 = glmm(full_form_RT, foo)
+s2 = summary(m2)
+
+
+
 print(summary(null_form_RT))
 print(summary(full_form_RT))
 

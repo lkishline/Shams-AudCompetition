@@ -48,10 +48,10 @@ foo <- within(foo, {
   control <- NULL
   timingcheck <- NULL
   collapsed_conditions <- NULL
-  ## WE DON'T NEED THESE THREE BECAUSE WE HAVE ECC !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  Vcent <- NULL
-  Vperiph_Af_center <- NULL
-  Vperiph_Af_periph <- NULL
+  ## WE DON'T NEED THESE THREE BECAUSE WE HAVE ECC !!!!!!!!!!!!!!!!!!!!!!!!!!!!!  ### changed for columns
+  #Vcent <- NULL
+  #Vperiph_Af_center <- NULL
+  #Vperiph_Af_periph <- NULL
 })
 
 
@@ -60,30 +60,35 @@ foo <- within(foo, {
 ##############################
 
 foo <- within(foo, {
-  subjnum <- factor(subjnum)
+  subjnum <- factor(as.character(subjnum))
   #number_pressed <- factor(number_pressed)  # DANGER! DANGER! DANGER! DANGER!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  pressed_two <- as.integer(number_pressed == 2)  # new outcome variable !!!!!!!!!!!!!!!!!!!!!!!!!!
+  pressed_two <- as.logical(number_pressed == 2)  # new outcome variable !!!!!!!!!!!!!!!!!!!!!!!!!!
   presses_match_V <- with(foo, number_pressed == flashed)
-  cue_attn <- factor(cue_attn)
+  cue_attn <- as.logical(cue_attn)
   V1A1_or_V2A2 <- factor(V1A1_or_V2A2)
   V1A2 <- factor(V1A2)
   V2A1 <- factor(V2A1)
   #ecc <- factor(ecc, levels=c(0,1,2), labels=c("Vcent", "Vperiph_Af_center", "Vperiph_Af_periph"))
-  ecc <- factor(ecc, levels=c(0,1,2), labels=c("flank", "near", "far"))
-  #Vcent <- factor(Vcent)
-  #Vperiph_Af_center <- factor(Vperiph_Af_center)
-  #Vperiph_Af_periph <- factor(Vperiph_Af_periph)
+  ecc <- factor(ecc, levels=c(0,1,2), labels=c("flank", "near", "far"))                             # changed for columns
+  Vcent <- factor(Vcent)
+  Vperiph_Af_center <- factor(Vperiph_Af_center)
+  Vperiph_Af_periph <- factor(Vperiph_Af_periph)
   Ac_type <- factor(Ac_type)
 })
 
+foo$two_flashes <- foo$flashed == 2  # this is the "truth" parameter
+foo$raw_RT <- foo$raw_RT * 1000      # this puts reaction time in milliseconds for easier interpretation
+
 # helmert for "ecc" and "far"
-my.helmert <- matrix(c(-2/3, 1/3, 1/3, 0, -1/2, 1/2), ncol = 2)
+my.helmert <- matrix(c(-2/3, 1/3, 1/3, 0, -1/2, 1/2), ncol = 2)                                      # changed for columns
 # THIS MAKES CLEAR WHICH COLUMN OF HELMERT STANDS FOR WHICH CONTRAST.
 # ecc_targ means the colocated V & A were in eccentric (not center) position
 # far_foil means the target was eccentric AND the foil Aud stimulus was eccentric on the opposite side (nothing in center)
 colnames(my.helmert) <- c("_noncentral_flash_loc", "_noncentral_flash_and_faraway_foil")
 # assigning the new helmert coding to ecc
-contrasts(foo$ecc) = my.helmert
+contrasts(foo$ecc) <- my.helmert
+#contrasts(foo$ecc) <- "contr.helmert"
+
 #str(foo)
 
 # A TABULATION SPLIT BY "CONTROL VS FISSION-INDUCING VS FUSION-INDUCING" !!!!!!!!!!!!!!!!!!!!!!
@@ -110,7 +115,6 @@ print(thetable)
 #summary(drop1_mod)
 
 # THIS IS THE SIGNAL DETECTION THEORY STYLE MIXED MODEL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-foo$two_flashes <- foo$flashed == 2  # this is the "truth" parameter
 null_form <- formula(pressed_two ~ two_flashes + (1|subjnum))
 full_form <- formula(pressed_two ~ two_flashes*cue_attn*ecc + 
                        two_flashes*two_sounds_at_target_location + (1|subjnum))
@@ -133,17 +137,35 @@ anova(dprime_reduced_mod, dprime_null_mod)
 null_form_RT <- formula(raw_RT ~ two_flashes + (1|subjnum))
 full_form_RT <- formula(raw_RT ~ two_flashes*cue_attn*ecc*two_sounds_at_target_location*pressed_two + (1|subjnum))
 
+# running without ecc helmert contrast:
+base_form_RT_noecc <- formula(raw_RT ~ two_flashes + cue_attn + two_sounds_at_target_location + pressed_two + Vcent + Vperiph_Af_center + Vperiph_Af_periph + (1|subjnum))
+
+full_form_RT_noecc <- formula(raw_RT ~ two_flashes*cue_attn*two_sounds_at_target_location*pressed_two + 
+                                Vcent*cue_attn*two_sounds_at_target_location*pressed_two*two_flashes + 
+                                Vperiph_Af_center*cue_attn*two_sounds_at_target_location*pressed_two*two_flashes +
+                                Vperiph_Af_periph*cue_attn*two_sounds_at_target_location*pressed_two*two_flashes + (1|subjnum))
+
+RT_full_noecc_mod <- mixed(full_form_RT_noecc, data = foo, method="S", check_contrasts = FALSE)
+
 # the below give me errors...
 # not sure what the deal is.
-RT_null_mod <- mixed(null_form_RT, data=foo)
-RT_full_mod <- mixed(full_form_RT, data=foo, method="KR")
-#this no work either :(
-glmm = function(full_form_RT, foo){
-  mod = do.call(mixed, list(formula=full_form_RT, data=foo))
-  return(mod)
-}
-m2 = glmm(full_form_RT, foo)
-s2 = summary(m2)
+RT_null_mod <- mixed(null_form_RT, data=foo, method="S")
+RT_full_mod <- mixed(full_form_RT, data=foo, method="S", check_contrasts=TRUE)
+RT_full_mod <- mixed(full_form_RT, data=foo, method="KR", check_contrasts=FALSE)
+#RT_full_mod_contr <- mixed(full_form_RT, data=foo, method="S")
+RT_full_mod_PB <- mixed(full_form_RT, data=foo, method="PB", check_contrasts=FALSE)
+
+# Henrik Singmann suggestions
+
+test_full = mixed(raw_RT ~ two_flashes*cue_attn*ecc*two_sounds_at_target_location*pressed_two + (1|subjnum), per_parameter = "ecc", data = foo, method = "PB", check_contrasts = FALSE)
+
+# #this no work either :(
+# glmm = function(full_form_RT, foo){
+#   mod = do.call(mixed, list(formula=full_form_RT, data=foo))
+#   return(mod)
+# }
+# m2 = glmm(full_form_RT, foo)
+# s2 = summary(m2)
 
 
 
